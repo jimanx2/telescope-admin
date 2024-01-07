@@ -157,10 +157,10 @@ class DatabaseEntriesRepository implements Contract, ClearableRepository, Prunab
 
         $table = $this->table('telescope_entries');
 
-        $entries->chunk($this->chunkSize)->each(function ($chunked) use ($table) {
-            $table->insert($chunked->map(function ($entry) {
-                $entry->application_uuid = config('telescope.application_uuid');
-                $entry->content = json_encode($entry->content, JSON_INVALID_UTF8_SUBSTITUTE);
+        $entries->chunk($this->chunkSize)->each(function ($chunked) use ($table, $applicationUuid) {
+            $table->insert($chunked->map(function ($entry) use ($applicationUuid) {
+                $entry->application_uuid = $applicationUuid;
+                $entry->content = json_encode($entry->content, JSON_INVALID_UTF8_SUBSTITUTE);               
 
                 return $entry->toArray();
             })->toArray());
@@ -177,8 +177,24 @@ class DatabaseEntriesRepository implements Contract, ClearableRepository, Prunab
      */
     protected function storeExceptions(Collection $exceptions)
     {
-        $exceptions->chunk($this->chunkSize)->each(function ($chunked) {
-            $this->table('telescope_entries')->insert($chunked->map(function ($exception) {
+        // update applications list
+        $applicationUuid = config('telescope.application_uuid');
+        $applicationTable = $this->table('telescope_applications');
+        
+        if (
+            !$applicationTable
+            ->where(["uuid" => $applicationUuid])
+            ->first()
+        ) {
+            $applicationTable->insert([
+                "uuid" => $applicationUuid,
+                "name" => config("app.name")
+            ]);
+        }
+
+        $exceptions->chunk($this->chunkSize)->each(function ($chunked) use ($applicationUuid) {
+            $this->table('telescope_entries')->insert($chunked->map(function ($exception) use ($applicationUuid) {
+                $exception->application_uuid = $applicationUuid;
                 $occurrences = $this->countExceptionOccurences($exception);
 
                 $this->table('telescope_entries')
