@@ -17,8 +17,6 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
-use Illuminate\Foundation\Http\Events\RequestHandled;
-
 
 class TelescopeLumenServiceProvider extends ServiceProvider
 {
@@ -37,15 +35,7 @@ class TelescopeLumenServiceProvider extends ServiceProvider
         }
 
         // to make sure requests gets evented
-        $this->app->middleware([
-            function ($request, \Closure $next) {
-                $response = $next($request);
-
-                event(new RequestHandled($request, $response));
-
-                return $response;
-            }
-        ]);
+        $this->app->middleware(Http\Middleware\EnsureRequestEvented::class);
 
         $this->app->routeMiddleware([
             'telescope' => config('telescope.middleware', [])
