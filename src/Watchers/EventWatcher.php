@@ -134,6 +134,7 @@ class EventWatcher extends Watcher
         return Str::is(
             [
                 'Illuminate\*',
+                'Laravel\Telescope\Http\Events\*',
                 'Laravel\Octane\*',
                 'Laravel\Scout\Events\ModelsImported',
                 'eloquent*',

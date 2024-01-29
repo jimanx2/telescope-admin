@@ -3,7 +3,7 @@
 namespace Laravel\Telescope\Watchers;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Http\Events\RequestHandled;
+use Laravel\Telescope\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Support\Arr;

@@ -1,6 +1,6 @@
 <?php namespace Laravel\Telescope\Http\Middleware;
 
-use Illuminate\Foundation\Http\Events\RequestHandled;
+use Laravel\Telescope\Http\Events\RequestHandled;
 
 class EnsureRequestEvented
 {

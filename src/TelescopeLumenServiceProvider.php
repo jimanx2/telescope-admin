@@ -27,6 +27,7 @@ class TelescopeLumenServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->registerHelperMethods();
         $this->registerCommands();
         $this->registerPublishing();
 
@@ -64,6 +65,35 @@ class TelescopeLumenServiceProvider extends ServiceProvider
         $this->loadViewsFrom(
             __DIR__.'/../resources/views', 'telescope'
         );
+    }
+
+    /**
+     * Register helper methods that's not available in lumen
+     * 
+     * @return void
+     */
+    private function registerHelperMethods()
+    {
+        if (!function_exists("now")) {
+            function now()
+            {
+                return \Carbon\Carbon::now();
+            }
+        }
+
+        if (!function_exists("config_path")) {
+            function config_path()
+            {
+                return app()->basePath("config");
+            }
+        }
+
+        if (!function_exists("app_path")) {
+            function app_path($path = ".")
+            {
+                return app()->basePath($path);
+            }
+        }
     }
 
     /**
